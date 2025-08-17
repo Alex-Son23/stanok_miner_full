@@ -5,10 +5,9 @@ def main_kb() -> ReplyKeyboardMarkup:
     return ReplyKeyboardMarkup(
         keyboard=[
             [KeyboardButton(text="🛒 Купить майнер"), KeyboardButton(text="⚙️ Мои майнеры")],
-            [KeyboardButton(text="🏭 Управление майнингом"), KeyboardButton(text="💰 Баланс")],
+            [KeyboardButton(text="⏰ Купить автоклейм"), KeyboardButton(text="💰 Баланс")],
             [KeyboardButton(text="➕ Пополнить STANOK"), KeyboardButton(text="📤 Вывести")],
-            [KeyboardButton(text="📈 Статистика"), KeyboardButton(text="ℹ️ О проекте")],
-            [KeyboardButton(text="👥 Мои рефералы")]
+            [KeyboardButton(text="👥 Мои рефералы"), KeyboardButton(text="ℹ️ О проекте")],
         ],
         resize_keyboard=True
     )
@@ -16,6 +15,12 @@ def main_kb() -> ReplyKeyboardMarkup:
 
 deposit = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text="Я оплатил✅", callback_data="payed")],
+    [InlineKeyboardButton(text="Отмена❌", callback_data="cancel_payment")]
+])
+
+
+buy_autoclaim = InlineKeyboardMarkup(inline_keyboard=[
+    [InlineKeyboardButton(text="Я оплатил✅", callback_data="payed_autoclaim")],
     [InlineKeyboardButton(text="Отмена❌", callback_data="cancel_payment")]
 ])
 

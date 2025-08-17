@@ -45,7 +45,7 @@ async def start_cmd(m: Message, state: FSMContext):
         # refresh username if changed
         if user.username != m.from_user.username:
             user.username = m.from_user.username
-            user.save(update_fields=["username"])
+            await sync_to_async(user.save)(update_fields=["username"])
 
     if not user.ton_address:
         await m.answer("Добро пожаловать! Укажите ваш основной TON-адрес (куда будут выводы и откуда пополнения):")

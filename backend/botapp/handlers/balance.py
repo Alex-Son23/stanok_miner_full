@@ -29,5 +29,10 @@ async def show_balance(m: Message):
         for op in ops:
             ts = op.created_at.strftime("%d.%m.%Y %H:%M")
             sign = "+" if op.amount >= 0 else ""
-            lines.append(f"{ts} — {op.type} — {op.title} — {sign}{op.amount}")
+            if op.amount != 0.0:
+                lines.append(f"{ts} {op.title} {sign}{op.amount}")
+            # elif op.title == "Заявка на вывод":
+            #     lines.append(f"{ts} #{op.id} — {op.title} — {sign}{op.amount}")
+            else:
+                lines.append(f"{ts} {op.title}")
     await m.answer("\n".join(lines), reply_markup=main_kb())

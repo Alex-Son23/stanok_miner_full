@@ -19,7 +19,7 @@ async def my_refs(m: Message):
     lines = [
         f"Приглашённых: {len(kids)}",
         f"Заработано на рефералах: {income} STANOK",
-        f"Ваша ссылка: {ref_link}",
+        f"Ваша ссылка: <code>{ref_link}</code>",
     ]
     if user.ref_parent_id:
         parent = await sync_to_async(User.objects.get)(pk=user.ref_parent_id)
@@ -28,4 +28,4 @@ async def my_refs(m: Message):
         lines.append("\nСписок:")
         for k in kids[:20]:
             lines.append(f"• @{k.username} — {k.registered_at.strftime('%d.%m.%Y')}")
-    await m.answer("\n".join(lines))
+    await m.answer("\n".join(lines), parse_mode="html")
