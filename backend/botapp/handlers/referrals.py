@@ -15,7 +15,7 @@ async def my_refs(m: Message):
     kids = await sync_to_async(lambda: list(User.objects.filter(ref_parent=user).order_by("-registered_at")))()
     referal_bonus_list = await sync_to_async(lambda: list(Operation.objects.filter(user=user, type=OperationType.REFERRAL_BONUS)))()
     income = sum(op.amount for op in referal_bonus_list)
-    ref_link = f"https://t.me/marke_example_evacode_bot?start={user.tg_id}"
+    ref_link = f"https://t.me/stanokminer_bot?start={user.tg_id}"
     lines = [
         f"Приглашённых: {len(kids)}",
         f"Заработано на рефералах: {income} STANOK",
