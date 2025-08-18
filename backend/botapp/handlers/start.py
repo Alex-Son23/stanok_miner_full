@@ -8,6 +8,7 @@ from botapp.keyboards import main_kb
 from django.conf import settings
 from asgiref.sync import sync_to_async
 from aiogram.filters import CommandStart, CommandObject
+from botapp.utils import is_valid_ton_wallet_common
 
 
 router = Router()
@@ -95,7 +96,7 @@ async def start_cmd(m: Message, command: CommandObject, state: FSMContext):
 @router.message(RegState.waiting_ton)
 async def save_ton(m: Message, state: FSMContext):
     addr = m.text.strip()
-    if len(addr) < 15:
+    if not is_valid_ton_wallet_common(addr):
         await m.answer("Похоже на неверный TON-адрес. Отправьте корректный адрес.")
         return
     user = await sync_to_async(User.objects.get)(tg_id=m.from_user.id)

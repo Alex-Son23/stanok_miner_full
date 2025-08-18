@@ -6,6 +6,9 @@ from autoclaim.models import AutoclaimSubscription
 from django.utils import timezone
 from asgiref.sync import sync_to_async
 from datetime import timedelta
+from typing import Optional
+from tonsdk.utils import Address
+
 
 @sync_to_async
 def adjust_balance(user: User | int, amount: Decimal, title: str, op_type: str) -> Operation:
@@ -82,3 +85,39 @@ def days_hours_left(end_dt):
     t = delta.seconds % 3600
     minutes = t // 60
     return days, hours, minutes
+
+
+FORBIDDEN = set(" \t\r\n/\\?#&=")
+
+def normalize_ton_wallet_common(addr: str) -> Optional[str]:
+    """
+    Принимает ТОЛЬКО обычный кошелёк в формате UQ… (friendly, url-safe, non-bounceable).
+    Deeplink-и/сырые адреса/тестнет — отвергаем.
+    Возвращает нормализованный UQ… (mainnet) или None.
+    """
+    if not addr:
+        return None
+    s = addr.strip()
+    # ничего, что похоже на ссылку/лишние символы
+    if "://" in s or any(ch in FORBIDDEN for ch in s):
+        return None
+
+    try:
+        a = Address(s)              # tonsdk сам проверит CRC/длину/алфавит
+        # только основной чейн кошельков (wc=0) и не тестовая сеть
+        if getattr(a, "is_test_only", False) or getattr(a, "wc", 0) != 0:
+            return None
+
+        # нормализуем в user-friendly, url-safe, non-bounceable => UQ…
+        friendly = a.to_string(
+            is_user_friendly=True,
+            is_url_safe=True,
+            is_bounceable=False,    # именно non-bounceable (UQ…)
+            is_test_only=False,
+        )
+        return friendly if friendly.startswith("UQ") else None
+    except Exception:
+        return None
+
+def is_valid_ton_wallet_common(addr: str) -> bool:
+    return normalize_ton_wallet_common(addr) is not None

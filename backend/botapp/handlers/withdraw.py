@@ -17,7 +17,7 @@ class WithdrawState(StatesGroup):
     withdraw_value = State()
 
 MIN_WITHDRAW = Decimal('100000')
-TAX = Decimal('0.02')  # 2%
+TAX = Decimal('0.03')  # 2%
 
 @router.message(F.text == "📤 Вывести")
 async def withdraw_prompt(m: Message, state: FSMContext):

@@ -21,9 +21,10 @@ def _price_key(plan_code: str) -> str:
         "6m": "AUTOCLAIM_PRICE_6M",
     }[plan_code]
 
-def is_admin(m: Message) -> bool:
-    # return m.from_user and (m.from_user.id == settings.ADMIN_TG_ID)
-    return True
+def admin_only(message: Message) -> bool:
+    return message.from_user and message.from_user.id == settings.ADMIN_TG_ID
+
+router.message.filter(admin_only)
 
 @router.message(Command("a_add"))
 async def a_add(m: Message):
@@ -86,9 +87,6 @@ async def add_autoclaim(m: Message):
 
 @router.message(Command("set_price"))
 async def a_set_price(m: Message):
-    # if not is_admin(m):
-    #     return
-    # /a_set_price 1w|1m|6m <ton_price>
     try:
         _, plan, price = m.text.split(maxsplit=2)
         assert plan in ("1w", "1m", "6m")
@@ -125,8 +123,6 @@ async def a_set_price(m: Message):
 
 @router.message(Command("withdraws"))
 async def a_withdraws(m: Message):
-    if not is_admin(m):
-        return
     reqs = await sync_to_async(
         lambda: list(
             WithdrawalRequest.objects
@@ -146,8 +142,6 @@ async def a_withdraws(m: Message):
 
 @router.message(Command("withdraw_done"))
 async def a_withdraw_done(m: Message):
-    if not is_admin(m):
-        return
     try:
         _, rid = m.text.split(maxsplit=1)
         rid = int(rid)
@@ -172,8 +166,6 @@ async def a_withdraw_done(m: Message):
 
 @router.message(Command("user"))
 async def a_user(m: Message):
-    if not is_admin(m):
-        return
     try:
         _, uname = m.text.split(maxsplit=1)
     except Exception:

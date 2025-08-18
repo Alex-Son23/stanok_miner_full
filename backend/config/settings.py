@@ -102,3 +102,15 @@ CA_TOKEN = os.environ.get("CA_TOKEN", "")
 BOT_TOKEN = os.environ.get("BOT_TOKEN", "")
 BOT_ADMIN_TOKEN = os.environ.get("BOT_ADMIN_TOKEN", "")
 ADMIN_TG_ID = int(os.environ.get("ADMIN_TG_ID", "0") or 0)
+
+
+ALLOWED_HOSTS = [
+    "optionally-ideal-gnu.cloudpub.ru",
+    # ...при необходимости ещё домены
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://optionally-ideal-gnu.cloudpub.ru",
+    # можно шире:
+    # "https://*.cloudpub.ru",
+]
