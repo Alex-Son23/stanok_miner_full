@@ -26,6 +26,10 @@ def admin_only(message: Message) -> bool:
 
 router.message.filter(admin_only)
 
+@router.message(Command("start"))
+async def start(m: Message):
+    await m.answer("Приветствую в админке STANOK Miner")
+
 @router.message(Command("a_add"))
 async def a_add(m: Message):
     try:
