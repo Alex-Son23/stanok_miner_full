@@ -105,7 +105,7 @@ ADMIN_TG_ID = int(os.environ.get("ADMIN_TG_ID", "0") or 0)
 
 
 ALLOWED_HOSTS = [
-    "optionally-ideal-gnu.cloudpub.ru",
+    "*",
     # ...при необходимости ещё домены
 ]
 
