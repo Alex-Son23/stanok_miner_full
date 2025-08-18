@@ -36,3 +36,6 @@ def claim_kb(miners_to_claim: list) -> InlineKeyboardMarkup:
     if button_layer:
         mn_button_list.append(button_layer)
     return InlineKeyboardMarkup(inline_keyboard=mn_button_list)
+
+
+cancel_buying = ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text="Отмена")]])

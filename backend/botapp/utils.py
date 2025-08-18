@@ -40,7 +40,7 @@ def make_miners_list(miners_list) -> list:
         claim = "доступен" if mn.is_claim_available() else "недоступен"
         miner_name = " ".join(str(mn.level).split()[:3])
         # lines.append(f"• #{mn.id} {mn.level.name}: {mn.principal} STANOK, {status}, дней осталось: {left_days}, claim: {claim}")
-        s = f"💠━━━━━━━━━━━━━━━💠\n💎{miner_name} #{mn.id}💎\n🔋Статус: {status}\n🪙STANKO'в в работе: {mn.principal}\n📅Работать осталось: {ld} дней {lh} часов {lm} минут\n"
+        s = f"💎{miner_name} #{mn.id}💎\n🔋Статус: {status}\n🪙STANKO'в в работе: {mn.principal}\n📅Работать осталось: {ld} дней {lh} часов {lm} минут\n"
         if claim == "доступен":
             miners_to_claim.append(mn)
             s += "✅Клейм доступен!\n💠━━━━━━━━━━━━━━━💠"

@@ -33,14 +33,19 @@ async def deposit_info(m: Message):
 @router.callback_query(F.data == "payed")
 async def notify_paid(call: CallbackQuery):
     # bot = Bot(token=settings.BOT_ADMIN_TOKEN)
-    text = f"💳 Пользователь @{call.from_user.username} сообщил о ПЛАТЕЖЕ."
+    user = await sync_to_async(User.objects.filter(username=call.from_user.username).first)()
+    text = f"💳 Пользователь @{call.from_user.username} сообщил о ПЛАТЕЖЕ.\n<code>{user.ton_address}</code>"
     async with aiohttp.ClientSession() as session:
         await session.post(
             f"https://api.telegram.org/bot{settings.BOT_ADMIN_TOKEN}/sendMessage",
-            data={"chat_id": settings.ADMIN_TG_ID, "text": text}
+            data={"chat_id": settings.ADMIN_TG_ID, "text": text, "parse_mode": "html"}
         )
     # await bot.send_message(chat_id=settings.ADMIN_TG_ID, text=text)
     await call.message.edit_text(text="Сообщение отправлено. Админ проверит и зачислит STANOK.")
+
+@router.callback_query(F.data == "cancel_payment")
+async def notify_paid(call: CallbackQuery):
+    await call.message.edit_text("Покупка отменена")
 
 
 @router.message(F.text == "⏰ Купить автоклейм")
@@ -78,11 +83,12 @@ async def autoclaim_info(m: Message):
 @router.callback_query(F.data == "payed_autoclaim")
 async def notify_paid(call: CallbackQuery):
     # bot = Bot(token=settings.BOT_ADMIN_TOKEN)
-    text = f"💳 Пользователь @{call.from_user.username} сообщил о покупке АВТОКЛЕЙМА"
+    user = await sync_to_async(User.objects.filter(username=call.from_user.username).first)()
+    text = f"💳 Пользователь @{call.from_user.username} сообщил о покупке АВТОКЛЕЙМА.\n<code>{user.ton_address}</code>"
     async with aiohttp.ClientSession() as session:
         await session.post(
             f"https://api.telegram.org/bot{settings.BOT_ADMIN_TOKEN}/sendMessage",
-            data={"chat_id": settings.ADMIN_TG_ID, "text": text}
+            data={"chat_id": settings.ADMIN_TG_ID, "text": text, "parse_mode": "html"}
         )
     # await bot.send_message(chat_id=settings.ADMIN_TG_ID, text=text)
     await call.message.edit_text(text="Сообщение отправлено. Админ проверит и включит вам автоклейм.")

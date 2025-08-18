@@ -6,7 +6,7 @@ from datetime import timedelta
 from users.models import User
 from miners.models import Miner, MinerLevel
 from finance.models import Operation, OperationType
-from botapp.keyboards import main_kb, claim_kb
+from botapp.keyboards import main_kb, claim_kb, cancel_buying
 from asgiref.sync import sync_to_async
 from datetime import datetime
 from finance.models import Operation, OperationType
@@ -39,7 +39,7 @@ async def buy_prompt(m: Message, state: FSMContext):
     path = _find_static("images/prices.jpeg")
     print(path)
     photo = FSInputFile(path)
-    await m.answer_photo(photo, caption="Введите сумму в STANOK, на которую купить майнер (например, 350000)")
+    await m.answer_photo(photo, caption="Введите сумму в STANOK, на которую купить майнер (например, 350000)", reply_markup=cancel_buying)
     # await m.answer(
     # "<code>Уровень     Цена      Доход/день.   Срок</code>\n"
     # "<code>-------------------------------------------------------</code>\n"
@@ -52,6 +52,11 @@ async def buy_prompt(m: Message, state: FSMContext):
     # "Введите сумму в STANOK, на которую купить майнер (например, 350000)", parse_mode="html"
     # )
     await state.set_state(DepositState.deposit)
+
+@router.message(F.text == 'Отмена')
+async def canel_miner_buy(m : Message, state: FSMContext):
+    await state.clear()
+    await m.answer(text="Покупка отменена", reply_markup=main_kb())
 
 @router.message(DepositState.deposit)
 async def buy_process(m: Message, state: FSMContext):
@@ -133,12 +138,12 @@ async def my_miners(m: Message):
             .filter(user_id=user.id)
             .first()
     )()
-    t = f"Автоклейм не активен!\n"
+    t = f"Автоклейм не активен!\n💠━━━━━━━━━━━━━━━💠"
     if autoclaim:
         print(autoclaim)
         d, h, _ = days_hours_left(autoclaim.active_until)
         if d != 0 or h != 0:
-            t = f"Автоклейм активен!\nДо окончания действия автоклейма осталось: {d} дней {h} часов"
+            t = f"Автоклейм активен!\nДо окончания действия автоклейма осталось: {d} дней {h} часов\n💠━━━━━━━━━━━━━━━💠"
     lines, miners_to_claim = make_miners_list(miners_list=miners)
     lines.insert(0, t)
     # for mn in miners:
