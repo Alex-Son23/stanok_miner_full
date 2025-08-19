@@ -36,6 +36,7 @@ def make_miners_list(miners_list) -> list:
         status = "активен" if (mn.active and now < mn.expires_at) else "истёк"
         left_days = max(0, (mn.expires_at - now).days)
         ld, lh, lm = days_hours_left(mn.expires_at)
+        print("CHEEEECK")
         d, h, m = days_hours_left(mn.next_claim_at)
         claim = "доступен" if mn.is_claim_available() else "недоступен"
         miner_name = " ".join(str(mn.level).split()[:3])
@@ -79,8 +80,8 @@ def days_hours_left(end_dt):
     now = timezone.now()
     delta = end_dt - now
     if delta.total_seconds() <= 0:
-        return 0, 0
-    days = delta.days
+        return 0, 0, 0
+    days = delta.days if delta.days else None
     hours = delta.seconds // 3600  # остаток часов внутри суток
     t = delta.seconds % 3600
     minutes = t // 60
