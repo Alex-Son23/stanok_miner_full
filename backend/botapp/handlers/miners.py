@@ -157,3 +157,43 @@ async def my_miners(m: Message):
     #     if claim == "доступен":
     #         miners_to_claim.append(mn)
     await m.answer("\n".join(lines), reply_markup=claim_kb(miners_to_claim=miners_to_claim))
+
+
+@router.callback_query(F.data.startswith("claim"))
+async def claim_by_id(call: CallbackQuery):
+    user = await sync_to_async(User.objects.filter(tg_id=call.from_user.id).first, thread_sensitive=True)()
+    if not user:
+        await call.answer("Сначала /start")
+        return
+    miner_id = int(call.data.split()[-1])
+    mn = await sync_to_async(Miner.objects.select_related('level').filter(id=miner_id, user=user).first, thread_sensitive=True)()
+    if not mn:
+        await call.answer("Майнер не найден.")
+        return
+    now = timezone.now()
+    if not (mn.active and now >= mn.next_claim_at and now < mn.expires_at):
+        await call.answer("Клейм недоступен сейчас.")
+        return
+    reward = mn.claim_amount()
+    # начисляем
+    await sync_to_async(Operation.objects.create)(user=user, type=OperationType.CLAIM, title=f"Claim по {mn.level.name} #{mn.id}", amount=reward)
+    user.balance = (user.balance + reward).quantize(Decimal('0.01'))
+    await sync_to_async(user.save)(update_fields=['balance'])
+
+    # двигаем окно
+    mn.next_claim_at = mn.next_claim_at + timedelta(hours=24)
+    if now >= mn.expires_at:
+        mn.active = False
+    await sync_to_async(mn.save)(update_fields=['next_claim_at','active'])
+    await call.answer(f"Начислено {reward} STANOK. Следующий claim после {mn.next_claim_at.strftime('%d.%m %H:%M UTC')}")
+
+    miners = await sync_to_async(
+        lambda: list(
+            Miner.objects
+            .filter(user_id=user.id)
+            .select_related("level")
+            .order_by("-created_at")
+        )
+    )()
+    lines, miners_to_claim = make_miners_list(miners_list=miners)
+    await call.message.edit_text("\n".join(lines), reply_markup=claim_kb(miners_to_claim=miners_to_claim))
