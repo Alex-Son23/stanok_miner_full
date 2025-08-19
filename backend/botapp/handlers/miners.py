@@ -181,7 +181,7 @@ async def claim_by_id(call: CallbackQuery):
     await sync_to_async(user.save)(update_fields=['balance'])
 
     # двигаем окно
-    mn.next_claim_at = mn.next_claim_at + timedelta(hours=24)
+    mn.next_claim_at = now + timedelta(hours=24)
     if now >= mn.expires_at:
         mn.active = False
     await sync_to_async(mn.save)(update_fields=['next_claim_at','active'])

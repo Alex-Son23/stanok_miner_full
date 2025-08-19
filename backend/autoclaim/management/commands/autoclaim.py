@@ -115,7 +115,7 @@ class Command(BaseCommand):
                     )
 
                     # Сдвигаем окно на +24 часа (строго, без «догонялок»)
-                    mn.next_claim_at = mn.next_claim_at + timedelta(hours=24)
+                    mn.next_claim_at = now + timedelta(hours=24)
                     if now >= mn.expires_at:
                         mn.active = False
                     mn.save(update_fields=["next_claim_at", "active"])
